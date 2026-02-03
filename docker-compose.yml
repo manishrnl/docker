@@ -1,27 +1,32 @@
-version: "3.8"
-
 services:
-  docker-db:
-    image: postgres
-    container_name: docker
+  docker-db-services:
+    image: postgres:latest
+    container_name: db-container
+    ports:
+      - "5432:5432"
     environment:
-      POSTGRES_DB: docker
+      POSTGRES_DB: docker_database
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Manish@2009
     volumes:
-      - docker-db-data:/var/lib/postgresql/data
+      # Changed to the parent directory as suggested by your error log
+      - docker-db-data:/var/lib/postgresql
     networks:
       - myNetwork
 
+  docker-service:
+    image: manishrnl/manish-docker-service-images:latest
+    container_name: app-service
+    ports:
+      - "8080:8080"
+    networks:
+      - myNetwork
+    depends_on:
+      - docker-db-services
 
-  docker:
 volumes:
-  #  same volume name as in services.docker-db.volumes
   docker-db-data:
+
 networks:
-  #  same network name as in services.docker-db.network
   myNetwork:
-
-
-
-
+    driver: bridge
